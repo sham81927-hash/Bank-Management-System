@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+#include "Account.h"
+
+using namespace std;
+
+int main() {
+    unordered_map<string, shared_ptr<Account>> bankDatabase;
+
+    bankDatabase["ACC101"] = make_shared<SavingsAccount>("ACC101", "Seham Ahmed", 5000.0, 0.05);
+    bankDatabase["ACC102"] = make_shared<CheckingAccount>("ACC102", "Mohamed Ali", 2000.0, 500.0);
+
+    cout << "=== Banking System Simulation ===\n";
+
+    bankDatabase["ACC101"]->deposit(1500.0);
+    bankDatabase["ACC101"]->withdraw(500.0);
+
+    auto savingsAcc = dynamic_pointer_cast<SavingsAccount>(bankDatabase["ACC101"]);
+    if (savingsAcc) {
+        savingsAcc->addInterest();
+    }
+
+    cout << "\nAccount: " << bankDatabase["ACC101"]->getOwnerName()
+              << " | Final Balance: " << bankDatabase["ACC101"]->getBalance() << "\n\n";
+
+    bankDatabase["ACC101"]->showTransactionHistory();
+
+    return 0;
+}

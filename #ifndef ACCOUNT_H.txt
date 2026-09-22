@@ -1,0 +1,84 @@
+#ifndef ACCOUNT_H
+#define ACCOUNT_H
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class Account {
+protected:
+    string accountNumber;
+    string ownerName;
+    double balance;
+    vector<string> transactionHistory;
+
+public:
+    Account(string accNum, string name, double initialBalance)
+        : accountNumber(accNum), ownerName(name), balance(initialBalance) {
+        transactionHistory.push_back("Account created with balance: " + to_string(initialBalance));
+    }
+
+    virtual ~Account() {}
+
+    virtual void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            transactionHistory.push_back("Deposited: +" + to_string(amount));
+        }
+    }
+
+    virtual void withdraw(double amount) {
+        if (amount > 0 && balance >= amount) {
+            balance -= amount;
+            transactionHistory.push_back("Withdrew: -" + to_string(amount));
+        } else {
+            cout << "Invalid withdrawal amount or insufficient funds!\n";
+        }
+    }
+
+    double getBalance() const { return balance; }
+    string getAccountNumber() const { return accountNumber; }
+    string getOwnerName() const { return ownerName; }
+
+    void showTransactionHistory() const {
+        cout << "--- Transaction History for " << ownerName << " ---\n";
+        for (const auto& t : transactionHistory) {
+            cout << "- " << t << "\n";
+        }
+    }
+};
+
+class CheckingAccount : public Account {
+private:
+    double overdraftLimit;
+
+public:
+    CheckingAccount(string accNum, string name, double initialBalance, double limit)
+        : Account(accNum, name, initialBalance), overdraftLimit(limit) {}
+
+    void withdraw(double amount) override {
+        if (amount > 0 && (balance + overdraftLimit) >= amount) {
+            balance -= amount;
+            transactionHistory.push_back("Checking Withdrew: -" + to_string(amount));
+        } else {
+            cout << "Exceeded overdraft limit!\n";
+        }
+    }
+};
+
+class SavingsAccount : public Account {
+private:
+    double interestRate;
+
+public:
+    SavingsAccount(string accNum, string name, double initialBalance, double rate)
+        : Account(accNum, name, initialBalance), interestRate(rate) {}
+
+    void addInterest() {
+        double interest = balance * interestRate;
+        balance += interest;
+        transactionHistory.push_back("Interest added: +" + to_string(interest));
+    }
+};
+
+#endif
